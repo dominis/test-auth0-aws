@@ -1,0 +1,46 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "vpc_id": "vpc-f5841990",
+    "subnet_id": "subnet-22074547",
+    "instance_type": "t2.micro",
+    "source_ami": "ami-d5ea86b5",
+    "region": "us-west-1"
+  },
+  "builders": [{
+    "ami_name": "jobtest-node-{{ timestamp }}",
+    "type": "amazon-ebs",
+    "access_key": "{{ user `aws_access_key` }}",
+    "secret_key": "{{ user `aws_secret_key` }}",
+    "region": "{{ user `region` }}",
+    "source_ami": "{{ user `source_ami` }}",
+    "instance_type": "{{ user `instance_type` }}",
+    "associate_public_ip_address": true,
+    "ami_virtualization_type": "hvm",
+    "ssh_username": "ec2-user",
+    "vpc_id": "{{ user `vpc_id` }}",
+    "subnet_id": "{{ user `subnet_id` }}",
+    "tags": {
+      "Name": "node-{{ timestamp }}",
+      "Role": "node"
+    },
+    "communicator": "ssh",
+    "ssh_pty": true
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": ["sudo yum install -y puppet"]
+    },
+    {
+      "type": "puppet-masterless",
+      "manifest_file": "puppet/site.pp",
+      "module_paths": ["puppet/modules"],
+      "facter": {
+        "puppet_role": "node",
+        "role": "node"
+      }
+    }
+    ]
+}

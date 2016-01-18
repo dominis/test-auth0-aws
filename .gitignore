@@ -1,0 +1,11 @@
+terraform.tfvars
+.terraform/
+terraform.tfplan
+terraform.tfstate*
+.tmp/
+login
+.tfplan
+.librarian/
+puppet/modules
+.*packerout.log
+Puppetfile.lock

@@ -1,0 +1,221 @@
+provider "aws" {
+  access_key = "${var.aws_access_key}"
+  secret_key = "${var.aws_secret_key}"
+  region = "${var.aws_region}"
+}
+
+resource "aws_key_pair" "auth0-jobtest" {
+  key_name = "auth0-jobtest"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGJCvWqX57o6U7OvwV3l7J9zAu529K4TqDnok+uvdtI4F8in4hKu69kPD/4nc25NIzLaTFJqL13mI0Lq3fhGtHJ+pe5qaiWQLszle6WQRsqxI/zpCB7C/bSQEclOAmjorpJysKa7GeEjXgRmiv7sCoQDDCHkLRqjTkKaB1iJaRAiLf1yhdGR+BMGtt/PggJW1e0J3Yc2WQDBuSE2b+oNJ311kKHDYDGh4lNHNgCCuzTuuGLy0SNzhCOihLaYNj/56y/m6pKp09fdBDrQDyw+7/iY1DUx3lImPyIXfGhdaW6TRPURI5PXfmcygbOrh32Fdi4OrNpJsiA+OwoXkM2lmt dominis@tinker"
+}
+
+resource "aws_vpc" "default" {
+  cidr_block = "10.0.0.0/16"
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+resource "aws_internet_gateway" "default" {
+  vpc_id = "${aws_vpc.default.id}"
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+# NAT instance
+
+resource "aws_security_group" "nat" {
+  ingress {
+    from_port = 0
+    to_port = 65535
+    protocol = "tcp"
+    cidr_blocks = [
+      "${aws_subnet.us-west-1a-private.cidr_block}",
+      "${aws_subnet.us-west-1a-public.cidr_block}",
+      "${aws_subnet.us-west-1c-private.cidr_block}",
+      "${aws_subnet.us-west-1c-public.cidr_block}",
+    ]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 65535
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = 0
+    to_port = 65535
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  vpc_id = "${aws_vpc.default.id}"
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+resource "aws_instance" "nat" {
+  ami = "${var.nat_ami_id}"
+  availability_zone = "us-west-1a"
+  instance_type = "${var.nat_instance_type}"
+  key_name = "${var.aws_key_name}"
+  security_groups = ["${aws_security_group.nat.id}", ]
+  subnet_id = "${aws_subnet.us-west-1a-public.id}"
+  associate_public_ip_address = true
+  source_dest_check = false
+  tags {
+      Name = "auth0-jobtest-nat-box"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+# resource "aws_eip" "nat" {
+#   instance = "${aws_instance.nat.id}"
+#   vpc = true
+# }
+
+# Public subnets
+
+resource "aws_subnet" "us-west-1a-public" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  cidr_block = "10.0.1.0/24"
+  availability_zone = "us-west-1a"
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+resource "aws_subnet" "us-west-1c-public" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  cidr_block = "10.0.2.0/24"
+  availability_zone = "us-west-1a"
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+# Routing table for public subnets
+
+resource "aws_route_table" "us-west-1a-public" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.default.id}"
+  }
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+resource "aws_route_table_association" "us-west-1a-public" {
+  subnet_id = "${aws_subnet.us-west-1a-public.id}"
+  route_table_id = "${aws_route_table.us-west-1a-public.id}"
+}
+
+resource "aws_route_table" "us-west-1c-public" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.default.id}"
+  }
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+resource "aws_route_table_association" "us-west-1c-public" {
+  subnet_id = "${aws_subnet.us-west-1c-public.id}"
+  route_table_id = "${aws_route_table.us-west-1c-public.id}"
+}
+
+
+# Private subsets
+
+resource "aws_subnet" "us-west-1a-private" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  cidr_block = "10.0.11.0/24"
+  availability_zone = "us-west-1a"
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+resource "aws_subnet" "us-west-1c-private" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  cidr_block = "10.0.12.0/24"
+  availability_zone = "us-west-1c"
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+# Routing table for private subnets
+
+resource "aws_route_table" "us-west-1a-private" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    instance_id = "${aws_instance.nat.id}"
+  }
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+resource "aws_route_table_association" "us-west-1a-private" {
+  subnet_id = "${aws_subnet.us-west-1a-private.id}"
+  route_table_id = "${aws_route_table.us-west-1a-private.id}"
+}
+
+
+resource "aws_route_table" "us-west-1c-private" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    instance_id = "${aws_instance.nat.id}"
+  }
+  tags {
+      Name = "auth0-jobtest"
+      Environment = "dev"
+      Owner = "dominis"
+  }
+}
+
+resource "aws_route_table_association" "us-west-1c-private" {
+  subnet_id = "${aws_subnet.us-west-1c-private.id}"
+  route_table_id = "${aws_route_table.us-west-1c-private.id}"
+}
+
