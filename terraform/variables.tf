@@ -25,6 +25,9 @@ variable "nat_instance_type" {
 variable "node_instance_type" {
   default = "t2.micro"
 }
+variable "proxy_instance_type" {
+  default = "t2.micro"
+}
 variable "asg_number_of_instances" {
   default = 5
 }
