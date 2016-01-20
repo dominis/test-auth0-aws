@@ -29,3 +29,8 @@ make build_ami
 make plan
 make apply
 ```
+
+## TODO:
+
+- [ ] create temp vpc for the ami build - `vpc_id` and `subnet_id` hardcoded in the packer configs
+- [ ] create separated security groups for each role
