@@ -28,9 +28,13 @@ variable "node_instance_type" {
 variable "proxy_instance_type" {
   default = "t2.micro"
 }
+
 variable "asg_number_of_instances" {
-  default = 5
+  default = 1
+}
+variable "asg_maximum_number_of_instances" {
+  default = 10
 }
 variable "asg_minimum_number_of_instances" {
-  default = 2
+  default = 1
 }
