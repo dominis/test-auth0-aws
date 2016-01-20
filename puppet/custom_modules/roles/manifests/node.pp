@@ -3,7 +3,7 @@ class roles::node {
     manage_repo => true,
     package_source => 'nginx-mainline',
   }
-  file { "/etc/nginx/conf.d/vhost.conf":
+  file { "/etc/nginx/sites-enabled/default-vhost.conf":
     content => template('roles/node/site.conf.erb'),
     require => Class['nginx'],
   }
