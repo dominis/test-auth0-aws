@@ -36,3 +36,4 @@ make apply
 - [ ] use `aws_nat_gateway` instead of the ec2 instance
 - [ ] create temp vpc for the ami build - `vpc_id` and `subnet_id` hardcoded in the packer configs
 - [ ] create separated security groups for each role
+- [ ] remove private subnet from the vpc
