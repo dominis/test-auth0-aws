@@ -5,8 +5,14 @@ all:
 	clean build-ami plan apply
 
 build-ami:
+	build-ami-node build-ami-proxy
+
+build-ami-node:
 	librarian-puppet install --path=./puppet/modules
 	packer build packer/node.json 2>&1 | tee .node-packerout.log
+
+build-ami-proxy:
+	librarian-puppet install --path=./puppet/modules
 	packer build packer/proxy.json 2>&1 | tee .proxy-packerout.log
 
 plan:
