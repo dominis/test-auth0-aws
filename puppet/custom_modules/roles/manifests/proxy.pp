@@ -9,7 +9,7 @@ class roles::proxy {
       'node_name'        => 'consul-127.0.0.1',
       'server'           => true,
       'bootstrap_expect' => 2,
-      'retry_join'       => ['127.0.0.1'],
+      'retry_join'       => ['consul.jobtest.aws'],
     }
   }
 }

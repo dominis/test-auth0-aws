@@ -5,7 +5,10 @@ resource "aws_launch_configuration" "launch_config" {
   key_name = "${var.aws_key_name}"
   security_groups = ["${aws_security_group.nat.id}"]
   key_name = "${var.aws_key_name}"
-  #user_data = "${file(var.user_data)}"
+  user_data = <<EOT
+  #!/bin/bash
+  sed -i 's/127.0.0.1/node-'$HOSTNAME'/g' /etc/consul/config.json
+EOT
 
 }
 

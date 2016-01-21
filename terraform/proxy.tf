@@ -50,11 +50,26 @@ resource "aws_instance" "proxy-1a" {
       Owner = "dominis"
       Role = "proxy"
   }
+  user_data = <<EOT
+  #!/bin/bash
+  sed -i 's/127.0.0.1/proxy-1a/g' /etc/consul/config.json
+EOT
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "consul" {
+  zone_id = "${aws_route53_zone.jobtest.zone_id}"
+  name = "consul.jobtest.aws"
+  type = "CNAME"
+  ttl = "10"
+  records = ["${aws_instance.proxy-1a.private_dns}"]
 }
 
 resource "aws_instance" "proxy-1c" {
   depends_on = ["aws_instance.proxy-1a"]
-  count = 2
+  count = 1
   connection {
     user = "ec2-user"
     key_file = "${var.key_path}"
@@ -65,10 +80,16 @@ resource "aws_instance" "proxy-1c" {
   vpc_security_group_ids = ["${aws_security_group.nat.id}"]
   subnet_id = "${aws_subnet.us-west-1c-public.id}"
   tags {
-      Name = "${format("auth0-jobtest-proxy-1c-%03d", count.index + 1)}"
+      Name = "auth0-jobtest-proxy-1c"
       Environment = "dev"
       Owner = "dominis"
       Role = "proxy"
   }
-  user_data = "#!/bin/bash\nsed -i 's/127.0.0.1/${aws_instance.proxy-1a.private_ip}/g' /etc/consul/config.json"
+  user_data = <<EOT
+  #!/bin/bash
+  sed -i 's/127.0.0.1/proxy-1c/g' /etc/consul/config.json
+EOT
+  lifecycle {
+    create_before_destroy = true
+  }
 }

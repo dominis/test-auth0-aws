@@ -16,6 +16,9 @@ variable "aws_region" {
 variable "aws_availability_zones" {
   default = "us-west-1a,us-west-1c"
 }
+variable "internalhost" {
+  default = "jobtest.aws"
+}
 variable "nat_ami_id" {
   default = "ami-d5ea86b5"
 }
@@ -30,11 +33,11 @@ variable "proxy_instance_type" {
 }
 
 variable "asg_number_of_instances" {
-  default = 1
+  default = 2
 }
 variable "asg_maximum_number_of_instances" {
   default = 10
 }
 variable "asg_minimum_number_of_instances" {
-  default = 1
+  default = 2
 }
