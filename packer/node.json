@@ -31,7 +31,11 @@
   "provisioners": [
     {
       "type": "shell",
-      "inline": ["sudo yum install -y puppet"]
+      "inline": [
+        "sudo yum install -y ruby-devel gcc",
+        "sudo gem install puppet json --no-ri --no-rdoc",
+        "sudo mv /usr/local/bin/* /usr/bin/"
+      ]
     },
     {
       "type": "puppet-masterless",

@@ -59,7 +59,7 @@ resource "aws_autoscaling_policy" "node" {
 resource "aws_cloudwatch_metric_alarm" "node" {
     alarm_name = "jobtest-watch"
     comparison_operator = "GreaterThanOrEqualToThreshold"
-    evaluation_periods = "2"
+    evaluation_periods = "1"
     metric_name = "CPUUtilization"
     namespace = "AWS/EC2"
     period = "60"
