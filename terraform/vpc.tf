@@ -5,6 +5,7 @@ resource "aws_vpc" "default" {
       Environment = "dev"
       Owner = "dominis"
   }
+  enable_dns_hostnames = true
 }
 
 resource "aws_internet_gateway" "default" {
@@ -208,3 +209,12 @@ resource "aws_route_table_association" "us-west-1c-private" {
   route_table_id = "${aws_route_table.us-west-1c-private.id}"
 }
 
+resource "aws_vpc_dhcp_options" "dns_resolver" {
+    domain_name = "${var.internalhost}"
+    domain_name_servers = ["127.0.0.1", "10.0.0.2"]
+}
+
+resource "aws_vpc_dhcp_options_association" "dns_resolver" {
+    vpc_id = "${aws_vpc.default.id}"
+    dhcp_options_id = "${aws_vpc_dhcp_options.dns_resolver.id}"
+}
