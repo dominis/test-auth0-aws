@@ -1,11 +1,9 @@
 proxy_ami_id=$(shell tail -1 .proxy-packerout.log |cut -d" " -f 2)
 node_ami_id=$(shell tail -1 .node-packerout.log |cut -d" " -f 2)
 
-all:
-	clean build-ami plan apply
+all: clean build-ami plan apply
 
-build-ami:
-	build-ami-node build-ami-proxy
+build-ami: build-ami-node build-ami-proxy
 
 build-ami-node:
 	librarian-puppet install --path=./puppet/modules
