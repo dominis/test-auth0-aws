@@ -18,7 +18,7 @@ resource "aws_elb" "jobtest" {
     interval = 5
   }
 
-  instances = ["${aws_instance.proxy-1a.id}", "${aws_instance.proxy-1c.id}"]
+  instances = ["${aws_instance.proxy-1a.id}", "${aws_instance.proxy-1c.*.id}"]
 
   cross_zone_load_balancing = true
   idle_timeout = 400
@@ -53,7 +53,8 @@ resource "aws_instance" "proxy-1a" {
 }
 
 resource "aws_instance" "proxy-1c" {
-  count = 1
+  depends_on = ["aws_instance.proxy-1a"]
+  count = 2
   connection {
     user = "ec2-user"
     key_file = "${var.key_path}"
@@ -64,9 +65,10 @@ resource "aws_instance" "proxy-1c" {
   vpc_security_group_ids = ["${aws_security_group.nat.id}"]
   subnet_id = "${aws_subnet.us-west-1c-public.id}"
   tags {
-      Name = "auth0-jobtest-proxy-1c"
+      Name = "${format("auth0-jobtest-proxy-1c-%03d", count.index + 1)}"
       Environment = "dev"
       Owner = "dominis"
       Role = "proxy"
   }
+  user_data = "#!/bin/bash\nsed -i 's/127.0.0.1/${aws_instance.proxy-1a.private_ip}/g' /etc/consul/config.json"
 }

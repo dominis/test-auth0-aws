@@ -4,7 +4,7 @@
     "aws_secret_key": "",
     "vpc_id": "vpc-f5841990",
     "subnet_id": "subnet-22074547",
-    "instance_type": "t2.micro",
+    "instance_type": "t2.medium",
     "source_ami": "ami-d5ea86b5",
     "region": "us-west-1"
   },
@@ -31,7 +31,11 @@
   "provisioners": [
     {
       "type": "shell",
-      "inline": ["sudo yum install -y puppet"]
+      "inline": [
+        "sudo yum install -y ruby-devel gcc",
+        "sudo gem install puppet json --no-ri --no-rdoc",
+        "sudo mv /usr/local/bin/* /usr/bin/"
+      ]
     },
     {
       "type": "puppet-masterless",
