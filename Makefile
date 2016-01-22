@@ -22,7 +22,7 @@ apply:
 	@terraform apply -var 'node_ami_id=$(node_ami_id)' -var 'proxy_ami_id=$(proxy_ami_id)' -var 'aws_access_key=$(AWS_ACCESS_KEY_ID)' -var 'aws_secret_key=$(AWS_SECRET_ACCESS_KEY)' ./terraform/
 
 graph:
-	@terraform graph ./terraform/ | dot -Tpng > graph.png
+	@terraform graph -draw-cycles ./terraform/ | dot -Tpng > graph.png
 
 destroy:
 	@terraform get ./terraform/
