@@ -52,7 +52,7 @@ resource "aws_instance" "proxy-1a" {
   }
   user_data = <<EOT
   #!/bin/bash
-  sed -i 's/127.0.0.1/proxy-1a/g' /etc/consul/config.json
+  sed -i 's/127.0.0.1/node-'$HOSTNAME'/g' /etc/consul/config.json
 EOT
   lifecycle {
     create_before_destroy = true
@@ -62,6 +62,14 @@ EOT
 resource "aws_route53_record" "consul" {
   zone_id = "${aws_route53_zone.jobtest.zone_id}"
   name = "consul.jobtest.aws"
+  type = "CNAME"
+  ttl = "10"
+  records = ["${aws_instance.proxy-1a.private_dns}"]
+}
+
+resource "aws_route53_record" "consul-1a" {
+  zone_id = "${aws_route53_zone.jobtest.zone_id}"
+  name = "consul-1a.jobtest.aws"
   type = "CNAME"
   ttl = "10"
   records = ["${aws_instance.proxy-1a.private_dns}"]
@@ -87,9 +95,18 @@ resource "aws_instance" "proxy-1c" {
   }
   user_data = <<EOT
   #!/bin/bash
-  sed -i 's/127.0.0.1/proxy-1c/g' /etc/consul/config.json
+  sed -i 's/127.0.0.1/node-'$HOSTNAME'/g' /etc/consul/config.json
 EOT
   lifecycle {
     create_before_destroy = true
   }
 }
+
+resource "aws_route53_record" "consul-1c" {
+  zone_id = "${aws_route53_zone.jobtest.zone_id}"
+  name = "consul-1c.jobtest.aws"
+  type = "CNAME"
+  ttl = "10"
+  records = ["${aws_instance.proxy-1c.private_dns}"]
+}
+
