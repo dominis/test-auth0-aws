@@ -32,7 +32,8 @@ make apply
 
 ## TODO:
 
-- [ ] create dns record for the consul servers
+- [ ] cleanup `proxy-(1c|1a)` creation
+- [X] create dns record for the consul servers
 - [ ] use `aws_nat_gateway` instead of the ec2 instance
 - [ ] create temp vpc for the ami build - `vpc_id` and `subnet_id` hardcoded in the packer configs
 - [ ] create separated security groups for each role
