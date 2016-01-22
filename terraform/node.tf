@@ -9,10 +9,8 @@ resource "aws_launch_configuration" "launch_config" {
   #!/bin/bash
   sed -i 's/127.0.0.1/node-'$HOSTNAME'/g' /etc/consul/config.json
   sed -i 's/127.0.0.1/node-'$HOSTNAME'/g' /etc/nginx/sites-enabled/default-vhost.conf
+  /etc/init.d/nginx restart
 EOT
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_autoscaling_group" "main_asg" {
