@@ -26,10 +26,10 @@ variable "nat_instance_type" {
   default = "t2.nano"
 }
 variable "node_instance_type" {
-  default = "t2.micro"
+  default = "t2.medium"
 }
 variable "proxy_instance_type" {
-  default = "t2.micro"
+  default = "m4.large"
 }
 
 variable "asg_number_of_instances" {
