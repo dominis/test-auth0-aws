@@ -30,6 +30,10 @@ make plan
 make apply
 ```
 
+## Current state:
+
+![graph](/graph.png?raw=true "relations")
+
 ## TODO:
 
 - [ ] cleanup `proxy-(1c|1a)` creation
