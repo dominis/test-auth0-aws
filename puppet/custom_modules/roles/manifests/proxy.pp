@@ -22,8 +22,14 @@ class roles::proxy {
     consul_max_stale => '10m',
   }
 
+  # this is needed to start nginx
+  file { "/etc/nginx/sites-enabled/default-vhost.conf":
+    content => template('roles/proxy/site.conf.erb'),
+    require => Class['nginx'],
+  }
+
   consul_template::watch { 'nginx-site.conf':
-    template      => 'roles/proxy/site.conf.erb',
+    template      => 'roles/proxy/site.conf.ctpl.erb',
     destination   => '/etc/nginx/sites-enabled/default-vhost.conf',
     command       => 'service nginx restart',
   }
@@ -33,9 +39,4 @@ class roles::proxy {
     command => "/etc/init.d/consul-template start",
     user    => root,
   }
-  cron { 'this is also not cool':
-    command => "/etc/init.d/nginx start",
-    user    => root,
-  }
-
 }
