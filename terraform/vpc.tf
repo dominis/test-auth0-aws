@@ -211,7 +211,7 @@ resource "aws_route_table_association" "us-west-1c-private" {
 
 resource "aws_vpc_dhcp_options" "dns_resolver" {
     domain_name = "${var.internalhost}"
-    domain_name_servers = ["127.0.0.1", "10.0.0.2"]
+    domain_name_servers = ["10.0.0.2"]
 }
 
 resource "aws_vpc_dhcp_options_association" "dns_resolver" {
