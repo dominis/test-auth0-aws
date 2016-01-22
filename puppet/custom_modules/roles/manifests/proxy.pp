@@ -28,4 +28,14 @@ class roles::proxy {
     command       => 'service nginx restart',
   }
 
+  # consul-template dies before consul even start
+  cron { 'this is not cool':
+    command => "/etc/init.d/consul-template start",
+    user    => root,
+  }
+  cron { 'this is also not cool':
+    command => "/etc/init.d/nginx start",
+    user    => root,
+  }
+
 }

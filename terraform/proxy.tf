@@ -37,7 +37,7 @@ resource "aws_instance" "proxy-1a" {
   count = 1
   connection {
     user = "ec2-user"
-    key_file = "${var.key_path}"
+    key_file = "${var.aws_key_path}"
   }
   instance_type = "${var.proxy_instance_type}"
   ami = "${var.proxy_ami_id}"
@@ -54,9 +54,18 @@ resource "aws_instance" "proxy-1a" {
   #!/bin/bash
   sed -i 's/127.0.0.1/node-'$HOSTNAME'/g' /etc/consul/config.json
 EOT
-  lifecycle {
-    create_before_destroy = true
-  }
+  # this block the execution of the terraform apply
+  # so we can join to the old consul nodes
+  # associate_public_ip_address = true
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "/bin/true"
+  #   ]
+  # }
+  # lifecycle {
+  #   create_before_destroy = true
+  # }
+
 }
 
 resource "aws_route53_record" "consul" {
@@ -76,11 +85,10 @@ resource "aws_route53_record" "consul-1a" {
 }
 
 resource "aws_instance" "proxy-1c" {
-  depends_on = ["aws_instance.proxy-1a"]
   count = 1
   connection {
     user = "ec2-user"
-    key_file = "${var.key_path}"
+    key_file = "${var.aws_key_path}"
   }
   instance_type = "${var.proxy_instance_type}"
   ami = "${var.proxy_ami_id}"
@@ -97,9 +105,17 @@ resource "aws_instance" "proxy-1c" {
   #!/bin/bash
   sed -i 's/127.0.0.1/node-'$HOSTNAME'/g' /etc/consul/config.json
 EOT
-  lifecycle {
-    create_before_destroy = true
-  }
+  # this block the execution of the terraform apply
+  # so we can join to the old consul nodes
+  # associate_public_ip_address = true
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "/bin/true"
+  #   ]
+  # }
+  # lifecycle {
+  #   create_before_destroy = true
+  # }
 }
 
 resource "aws_route53_record" "consul-1c" {
