@@ -4,7 +4,7 @@
     "aws_secret_key": "",
     "vpc_id": "vpc-4f418a2a",
     "subnet_id": "subnet-780ea31d",
-    "instance_type": "t2.micro",
+    "instance_type": "m4.large",
     "source_ami": "ami-d5ea86b5",
     "region": "us-west-1"
   },

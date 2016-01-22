@@ -1,5 +1,5 @@
 resource "aws_launch_configuration" "launch_config" {
-  name = "jobtest-lc"
+  name_prefix = "auth0-jobtest-node-"
   image_id = "${var.node_ami_id}"
   instance_type = "${var.node_instance_type}"
   key_name = "${var.aws_key_name}"
@@ -8,8 +8,11 @@ resource "aws_launch_configuration" "launch_config" {
   user_data = <<EOT
   #!/bin/bash
   sed -i 's/127.0.0.1/node-'$HOSTNAME'/g' /etc/consul/config.json
+  sed -i 's/127.0.0.1/node-'$HOSTNAME'/g' /etc/nginx/sites-enabled/default-vhost.conf
 EOT
-
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_autoscaling_group" "main_asg" {
