@@ -17,31 +17,19 @@ resource "aws_internet_gateway" "default" {
   }
 }
 
-# NAT instance
-
 resource "aws_security_group" "nat" {
   ingress {
-    from_port = 0
-    to_port = 65535
-    protocol = "tcp"
-    cidr_blocks = [
-      "${aws_subnet.us-west-1a-public.cidr_block}",
-      "${aws_subnet.us-west-1c-public.cidr_block}",
-    ]
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
   }
 
   vpc_id = "${aws_vpc.default.id}"
@@ -52,10 +40,10 @@ resource "aws_security_group" "nat" {
   }
 }
 
-resource "aws_instance" "nat" {
-  ami = "${var.nat_ami_id}"
+resource "aws_instance" "bastion" {
+  ami = "${var.bastion_ami_id}"
   availability_zone = "us-west-1a"
-  instance_type = "${var.nat_instance_type}"
+  instance_type = "${var.bastion_instance_type}"
   key_name = "${var.aws_key_name}"
   security_groups = ["${aws_security_group.nat.id}", ]
   subnet_id = "${aws_subnet.us-west-1a-public.id}"
@@ -66,16 +54,6 @@ resource "aws_instance" "nat" {
       Environment = "dev"
       Owner = "dominis"
   }
-}
-
-resource "aws_nat_gateway" "gw-us-west-1a" {
-  allocation_id = "${aws_eip.nat-us-west-1a.id}"
-  subnet_id = "${aws_subnet.us-west-1a-public.id}"
-  depends_on = ["aws_internet_gateway.default"]
-}
-
-resource "aws_eip" "nat-us-west-1a" {
-  vpc = true
 }
 
 # Public subnets

@@ -19,10 +19,10 @@ variable "aws_availability_zones" {
 variable "internalhost" {
   default = "jobtest.aws"
 }
-variable "nat_ami_id" {
+variable "bastion_ami_id" {
   default = "ami-d5ea86b5"
 }
-variable "nat_instance_type" {
+variable "bastion_instance_type" {
   default = "t2.nano"
 }
 variable "node_instance_type" {
