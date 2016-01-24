@@ -19,7 +19,7 @@ resource "aws_autoscaling_group" "main_asg" {
   name = "jobtest-asg"
 
   availability_zones = ["${split(",", var.aws_availability_zones)}"]
-  vpc_zone_identifier = ["${aws_subnet.us-west-1a-public.id}", "${aws_subnet.us-west-1c-public.id}"]
+  vpc_zone_identifier = ["${aws_subnet.us-west-1a-private.id}", "${aws_subnet.us-west-1c-private.id}"]
 
   launch_configuration = "${aws_launch_configuration.launch_config.id}"
 
@@ -56,7 +56,7 @@ resource "aws_autoscaling_policy" "node" {
     name = "jobtest-asg-policy"
     scaling_adjustment = 2
     adjustment_type = "ChangeInCapacity"
-    cooldown = 300
+    cooldown = 90
     autoscaling_group_name = "${aws_autoscaling_group.main_asg.name}"
 }
 

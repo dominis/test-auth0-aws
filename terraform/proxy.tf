@@ -18,7 +18,7 @@ resource "aws_elb" "jobtest" {
     interval = 5
   }
 
-  instances = ["${aws_instance.proxy-1a.id}", "${aws_instance.proxy-1c.*.id}"]
+  instances = ["${aws_instance.proxy-1a.id}", "${aws_instance.proxy-1c.id}"]
 
   cross_zone_load_balancing = true
   idle_timeout = 400
@@ -43,7 +43,7 @@ resource "aws_instance" "proxy-1a" {
   ami = "${var.proxy_ami_id}"
   key_name = "${var.aws_key_name}"
   vpc_security_group_ids = ["${aws_security_group.nat.id}"]
-  subnet_id = "${aws_subnet.us-west-1a-public.id}"
+  subnet_id = "${aws_subnet.us-west-1a-private.id}"
   tags {
       Name = "auth0-jobtest-proxy-1a"
       Environment = "dev"
@@ -94,7 +94,7 @@ resource "aws_instance" "proxy-1c" {
   ami = "${var.proxy_ami_id}"
   key_name = "${var.aws_key_name}"
   vpc_security_group_ids = ["${aws_security_group.nat.id}"]
-  subnet_id = "${aws_subnet.us-west-1c-public.id}"
+  subnet_id = "${aws_subnet.us-west-1c-private.id}"
   tags {
       Name = "auth0-jobtest-proxy-1c"
       Environment = "dev"
