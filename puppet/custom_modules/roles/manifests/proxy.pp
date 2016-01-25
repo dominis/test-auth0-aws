@@ -31,7 +31,7 @@ class roles::proxy {
   consul_template::watch { 'nginx-site.conf':
     template      => 'roles/proxy/site.conf.ctpl.erb',
     destination   => '/etc/nginx/sites-enabled/default-vhost.conf',
-    command       => '/etc/init.d/nginx start',
+    command       => '/etc/init.d/nginx reload',
   }
 
   # consul-template dies before consul even start
